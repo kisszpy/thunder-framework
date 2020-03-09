@@ -2,6 +2,7 @@ package com.runx.framework.bean;
 
 import lombok.Data;
 
+import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,6 +42,11 @@ public class BeanDefine {
      * 所实现的接口
      */
     private Class<?>[] interfaces;
+
+    /**
+     * 所有构造函数
+     */
+    private Constructor<?> constructor;
 
     /**
      * 是否完成实例化

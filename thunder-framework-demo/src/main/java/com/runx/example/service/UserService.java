@@ -9,4 +9,6 @@ public interface UserService {
 
     void say();
 
+    int showMyLikes();
+
 }

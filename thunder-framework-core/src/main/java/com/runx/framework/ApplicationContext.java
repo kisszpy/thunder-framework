@@ -6,11 +6,14 @@ import com.runx.framework.annotation.Repository;
 import com.runx.framework.annotation.Service;
 import com.runx.framework.bean.BeanDefine;
 import com.runx.framework.bean.ClassPathScanner;
+import com.runx.framework.utils.ObjectUtils;
 import com.runx.framework.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +34,6 @@ public class ApplicationContext {
         try {
             classPathScanner.scan(basePackage);
             List<String> clazz = classPathScanner.getResources();
-            System.out.println(clazz);
             clazz.forEach(item -> {
                 Class<?> cls = classPathScanner.loadClass(item);
 
@@ -51,6 +53,13 @@ public class ApplicationContext {
                     });
                     beanDefine.setClazzName(cls.getName());
                     beanDefine.setSimpleName(cls.getSimpleName());
+                    // only exists a @Autowired constructor
+                    Constructor<?> constructor = Arrays.stream(cls.getConstructors()).filter(s -> s.isAnnotationPresent(Autowired.class)).findFirst().orElse(null);
+                    if (constructor == null) {
+                        // 默认无参
+                        constructor = Arrays.stream(cls.getConstructors()).filter(s -> s.getParameterCount() == 0).findFirst().get();
+                    }
+                    beanDefine.setConstructor(constructor);
                     handleDependency(beanDefine);
                     registerBean(beanDefine);
                 }
@@ -74,7 +83,6 @@ public class ApplicationContext {
                     Field field = instance.getClass().getDeclaredField(key);
                     field.setAccessible(true);
                     Object target = findOriginInstance(dependencies.get(key));
-                    log.info("setting target");
                     field.set(instance,target);
                 } catch (NoSuchFieldException e) {
                     e.printStackTrace();
@@ -82,15 +90,28 @@ public class ApplicationContext {
                     e.printStackTrace();
                 }
             }
+            if (!item.isInitial()){
+                // fixme
+                Class<?>[] clazz = item.getConstructor().getParameterTypes();
+                Object[] paramValue = new Object[clazz.length];
+                // fill values for parameter
+                for (int i = 0; i < clazz.length; i++) {
+                    paramValue[i] = findOriginInstance(clazz[i]);
+                }
+                try {
+                    Object instance = item.getConstructor().newInstance(paramValue);
+                    item.setInstance(instance);
+                    item.setInitial(true);
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-//        // 开始处理代理
-//        for (String key : beanDefineMap.keySet()) {
-//            BeanDefine item = beanDefineMap.get(key);
-//            Object proxyInstance = new CglibProxy(item.getInstance()).getInstance();
-//            item.setProxyInstance(proxyInstance);
-//            System.out.println(item);
-//        }
-        log.info("beanMap process end .");
+        log.info("application context initial success .");
     }
 
     private void handleDependency(BeanDefine beanDefine) {
@@ -109,12 +130,21 @@ public class ApplicationContext {
         Class<?> clazz = beanDefine.getClazz();
         Object object = null;
         try {
-            object = clazz.newInstance();
-            beanDefine.setInstance(object);
-            beanDefine.setInitial(true);
+            Constructor<?> constructor = beanDefine.getConstructor();
+            if (constructor.getParameterCount() == 0) {
+                object = constructor.newInstance();
+                beanDefine.setInstance(object);
+                beanDefine.setInitial(true);
+            }else {
+                // 无法构造
+                beanDefine.setInitial(false);
+                beanDefine.setInstance(null);
+            }
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
         beanDefineMap.putIfAbsent(beanDefine.getName(), beanDefine);
@@ -126,25 +156,6 @@ public class ApplicationContext {
         return beanDefineMap.get(clazz.getSimpleName());
     }
 
-//    public <T> T getBean1(String name){
-//        BeanDefine beanDefine = beanDefineMap.get(name);
-//        if (beanDefine == null) {
-//            return (T) beanDefineMap.values().stream()
-//                    .filter((v)-> v.getAlias().equals(name)).findFirst().get().getProxyInstance();
-//        }else {
-//            return (T) beanDefine.getProxyInstance();
-//        }
-//    }
-
-//    public  <T> T getBean1(Class<?> clazz) {
-//        System.out.println("ffff" + beanDefineMap);
-//        T t = (T) beanDefineMap.values().stream()
-//                .filter(item->item.getClazz().equals(clazz) || Arrays.asList(item.getInterfaces()).contains(clazz) )
-//                .findFirst().get().getProxyInstance();
-//        System.out.println(beanDefineMap);
-//        return t;
-//    }
-
     private <T> T findOriginInstance(Class<?> clazz) {
         return (T) beanDefineMap.values().stream()
                 .filter(item->item.getClazz().equals(clazz) || Arrays.asList(item.getInterfaces()).contains(clazz) )
@@ -155,7 +166,6 @@ public class ApplicationContext {
         T t = (T) beanDefineMap.values().stream()
                 .filter(item->item.getClazz().equals(clazz) || Arrays.asList(item.getInterfaces()).contains(clazz) )
                 .findFirst().get().getInstance();
-        System.out.println(beanDefineMap);
         return t;
     }
 

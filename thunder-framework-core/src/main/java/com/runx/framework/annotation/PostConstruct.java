@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * @author: kisszpy
  * @date: 2020/3/9
  */
-@Target({ElementType.FIELD,ElementType.CONSTRUCTOR,ElementType.PARAMETER})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Autowired {
+public @interface PostConstruct {
 }
