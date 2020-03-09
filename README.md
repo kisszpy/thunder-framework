@@ -6,3 +6,9 @@
 * com.runx.framework主要是框架功能
 ```text
 目前来说实现比较粗糙，但是功能基本已经有了，后续要进行细腻处理
+```
+# 使用说明
+```java
+ApplicationContext context = new ApplicationContext("com.runx.example");
+UserDao example = context.getBean(UserDao.class);
+```
