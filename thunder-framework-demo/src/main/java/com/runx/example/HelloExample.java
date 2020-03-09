@@ -2,6 +2,7 @@ package com.runx.example;
 
 import com.runx.example.dao.UserDao;
 import com.runx.example.service.UserService;
+import com.runx.example.user.service.LoginService;
 import com.runx.framework.annotation.Autowired;
 import com.runx.framework.annotation.Component;
 
@@ -21,8 +22,13 @@ public class HelloExample {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private LoginService loginService;
+
     public void exec() {
         userService.say();
+        boolean result = loginService.login("hello","23");
+        System.out.println(result);
     }
 
 }
