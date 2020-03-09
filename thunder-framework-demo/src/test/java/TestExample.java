@@ -18,10 +18,13 @@ public class TestExample {
     @Test
     public void test() {
         ApplicationContext context = new ApplicationContext("com.runx.example");
-        HelloExample example = context.getBean(HelloExample.class);
-        example.exec();
-        ArticleServiceImpl articleService = context.getBean(ArticleServiceImpl.class);
-        articleService.publish();
+        for (int i = 0; i < 100000; i++) {
+            HelloExample example = context.getBean(HelloExample.class);
+            example.exec();
+            ArticleServiceImpl articleService = context.getBean(ArticleServiceImpl.class);
+            articleService.publish();
+        }
+
     }
 
     @Test
