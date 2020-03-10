@@ -1,9 +1,6 @@
 package com.runx.framework;
 
-import com.runx.framework.annotation.Autowired;
-import com.runx.framework.annotation.Component;
-import com.runx.framework.annotation.Repository;
-import com.runx.framework.annotation.Service;
+import com.runx.framework.annotation.*;
 import com.runx.framework.bean.BeanDefine;
 import com.runx.framework.bean.ClassPathScanner;
 import com.runx.framework.utils.ObjectUtils;
@@ -14,10 +11,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author: kisszpy
@@ -29,6 +28,10 @@ public class ApplicationContext {
     private ClassPathScanner classPathScanner = new ClassPathScanner();
 
     private Map<String, BeanDefine> beanDefineMap = new ConcurrentHashMap<>(64);
+
+    private Thread hook;
+
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
 
     public ApplicationContext (String basePackage) {
         try {
@@ -42,6 +45,8 @@ public class ApplicationContext {
                         cls.isAnnotationPresent(Component.class)
                         ||
                         cls.isAnnotationPresent(Repository.class)
+                        ||
+                        cls.isAnnotationPresent(Configuration.class)
 
                 ) {
                     BeanDefine beanDefine = new BeanDefine();
@@ -54,7 +59,10 @@ public class ApplicationContext {
                     beanDefine.setClazzName(cls.getName());
                     beanDefine.setSimpleName(cls.getSimpleName());
                     // only exists a @Autowired constructor
-                    Constructor<?> constructor = Arrays.stream(cls.getConstructors()).filter(s -> s.isAnnotationPresent(Autowired.class)).findFirst().orElse(null);
+                    Constructor<?> constructor = Arrays.stream(cls.getConstructors())
+                            .filter(s -> s.isAnnotationPresent(Autowired.class))
+                            .findFirst()
+                            .orElse(null);
                     if (constructor == null) {
                         // 默认无参
                         constructor = Arrays.stream(cls.getConstructors()).filter(s -> s.getParameterCount() == 0).findFirst().get();
@@ -67,13 +75,6 @@ public class ApplicationContext {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
-        // 处理依赖关系
-        beanDefineMap.values().forEach(item->{
-
-        });
         for (String mapkey : beanDefineMap.keySet()) {
             BeanDefine item = beanDefineMap.get(mapkey);
             Map<String,Class<?>> dependencies = item.getDependencies();
@@ -127,7 +128,6 @@ public class ApplicationContext {
 
 
     public void registerBean(BeanDefine beanDefine){
-        Class<?> clazz = beanDefine.getClazz();
         Object object = null;
         try {
             Constructor<?> constructor = beanDefine.getConstructor();
@@ -135,6 +135,12 @@ public class ApplicationContext {
                 object = constructor.newInstance();
                 beanDefine.setInstance(object);
                 beanDefine.setInitial(true);
+                // fixme
+//                Method m = Arrays.stream(beanDefine.getClazz().getDeclaredMethods())
+//                .filter(method -> method.isAnnotationPresent(PostConstruct.class))
+//                .findFirst().orElse(null);
+//                m.invoke()
+
             }else {
                 // 无法构造
                 beanDefine.setInitial(false);
@@ -148,8 +154,6 @@ public class ApplicationContext {
             e.printStackTrace();
         }
         beanDefineMap.putIfAbsent(beanDefine.getName(), beanDefine);
-
-
     }
 
     public BeanDefine getBeanDefine(Class<?> clazz) {
@@ -177,6 +181,28 @@ public class ApplicationContext {
         }else {
             return (T) beanDefine.getInstance();
         }
+    }
+
+    public void start() {
+        try {
+            countDownLatch.await();
+            close();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void close() {
+        registerShutdownHook();
+    }
+
+    public void registerShutdownHook() {
+        hook = new Thread(()->{
+            countDownLatch.countDown();
+            // fixme 用来释放资源，做到优雅关闭，比如连接池、数据库、线程池等
+            System.out.println("容器关闭了");
+        });
+        Runtime.getRuntime().addShutdownHook(hook);
     }
 
 }

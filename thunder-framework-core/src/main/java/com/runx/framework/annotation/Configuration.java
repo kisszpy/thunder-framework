@@ -7,9 +7,9 @@ import java.lang.annotation.Target;
 
 /**
  * @author: kisszpy
- * @date: 2020/3/9
+ * @date: 2020/3/10
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PostConstruct {
+public @interface Configuration {
 }

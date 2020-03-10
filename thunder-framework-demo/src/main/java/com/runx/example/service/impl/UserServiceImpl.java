@@ -3,6 +3,7 @@ package com.runx.example.service.impl;
 import com.runx.example.dao.UserDao;
 import com.runx.example.service.UserService;
 import com.runx.framework.annotation.Autowired;
+import com.runx.framework.annotation.PostConstruct;
 import com.runx.framework.annotation.Service;
 
 import java.util.Random;
@@ -16,6 +17,11 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("post construct");
+    }
 
     @Override
     public void say() {

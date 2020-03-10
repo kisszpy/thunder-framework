@@ -1,5 +1,7 @@
 package com.runx.framework.aop;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -8,6 +10,7 @@ import java.lang.reflect.Proxy;
  * @author: kisszpy
  * @date: 2020/3/9
  */
+@Slf4j
 public class JdkProxy implements InvocationHandler {
 
     private Object target;
@@ -21,11 +24,11 @@ public class JdkProxy implements InvocationHandler {
     }
 
     public void before(){
-        System.out.println("before");
+        log.info("before invoker");
     }
 
     public void after() {
-        System.out.println("after");
+        log.info("after invoker");
     }
 
     @Override

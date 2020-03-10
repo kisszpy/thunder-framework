@@ -2,7 +2,9 @@ package com.runx.example;
 
 import com.runx.example.dao.UserDao;
 import com.runx.example.service.UserService;
+import com.runx.example.service.impl.UserServiceImpl;
 import com.runx.example.user.service.LoginService;
+import com.runx.framework.ApplicationContext;
 import com.runx.framework.annotation.Autowired;
 import com.runx.framework.annotation.Component;
 
@@ -29,6 +31,13 @@ public class HelloExample {
         userService.say();
         boolean result = loginService.login("hello","23");
         System.out.println("登录结果：" + result);
+    }
+
+    public static void main(String[] args) {
+        ApplicationContext context = new ApplicationContext("com.runx.example");
+        UserService example = context.getBean(UserServiceImpl.class);
+        System.out.println(example.showMyLikes());
+        context.start();
     }
 
 }

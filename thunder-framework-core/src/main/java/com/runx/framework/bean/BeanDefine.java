@@ -3,6 +3,7 @@ package com.runx.framework.bean;
 import lombok.Data;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,7 +69,15 @@ public class BeanDefine {
      */
     private Map<String,Class<?>> dependencies = new ConcurrentHashMap<>(16);
 
+    /**
+     * 构造后初始化函数
+     */
+    private Method postConstructMethod;
 
+    /**
+     * 销毁函数
+     */
+    private Method destroyMethod;
 
 
 

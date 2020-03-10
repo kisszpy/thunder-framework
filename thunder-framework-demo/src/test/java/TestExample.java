@@ -1,7 +1,10 @@
 import com.runx.example.HelloExample;
 import com.runx.example.service.ArticleServiceImpl;
+import com.runx.example.service.UserService;
+import com.runx.example.service.impl.UserServiceImpl;
 import com.runx.framework.ApplicationContext;
 import com.runx.framework.annotation.Autowired;
+import com.runx.framework.bean.JdkProxyBeanFactory;
 import org.junit.Test;
 
 import java.lang.reflect.Constructor;
@@ -53,6 +56,25 @@ public class TestExample {
         ArticleServiceImpl example = context.getBean(ArticleServiceImpl.class);
         example.publish();
     }
+
+    @Test
+    public void postConstruct() {
+        ApplicationContext context = new ApplicationContext("com.runx.example");
+        UserService example = context.getBean(UserServiceImpl.class);
+        System.out.println(example.showMyLikes());
+        context.close();
+    }
+
+    @Test
+    public void testAop() {
+        ApplicationContext context = new ApplicationContext("com.runx.example");
+        UserService example = context.getBean(UserServiceImpl.class);
+        example = (UserService) new JdkProxyBeanFactory(example).getBean();
+        int  result = example.showMyLikes();
+        System.out.println(result);
+        context.close();
+    }
+
 
 
 }

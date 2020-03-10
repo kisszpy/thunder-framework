@@ -42,7 +42,7 @@ public class ClassPathScanner {
                 scanFromDir(url.getPath(),packageName);
 
             }else if ("jar".equals(url.getProtocol())) {
-                // jar
+                // fixme jar
             }
         }
     }
