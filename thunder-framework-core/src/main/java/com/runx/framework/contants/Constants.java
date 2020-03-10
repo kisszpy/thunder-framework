@@ -1,4 +1,4 @@
-package com.runx.framework;
+package com.runx.framework.contants;
 
 /**
  * @author: kisszpy

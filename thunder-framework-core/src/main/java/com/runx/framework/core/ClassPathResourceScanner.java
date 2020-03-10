@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import static com.runx.framework.Constants.*;
+import static com.runx.framework.contants.Constants.*;
 
 /**
  * @author: kisszpy

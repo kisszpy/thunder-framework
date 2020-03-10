@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import static com.runx.framework.Constants.ROOT_PATH;
+import static com.runx.framework.contants.Constants.ROOT_PATH;
 
 /**
  * @author: kisszpy
