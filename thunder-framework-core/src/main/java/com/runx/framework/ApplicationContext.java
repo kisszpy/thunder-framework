@@ -23,7 +23,7 @@ import java.util.concurrent.CountDownLatch;
  * @date: 2020/3/9
  */
 @Slf4j
-public class ApplicationContext {
+public class ApplicationContext  {
 
     private ClassPathScanner classPathScanner = new ClassPathScanner();
 

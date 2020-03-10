@@ -8,4 +8,8 @@ public class Constants {
 
     public static final String ROOT_PATH = "/";
 
+    public static final String FILE_PROTOCOL = "file";
+
+    public static final String JAR = "jar";
+
 }

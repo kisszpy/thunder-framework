@@ -33,11 +33,5 @@ public class HelloExample {
         System.out.println("登录结果：" + result);
     }
 
-    public static void main(String[] args) {
-        ApplicationContext context = new ApplicationContext("com.runx.example");
-        UserService example = context.getBean(UserServiceImpl.class);
-        System.out.println(example.showMyLikes());
-        context.start();
-    }
 
 }
