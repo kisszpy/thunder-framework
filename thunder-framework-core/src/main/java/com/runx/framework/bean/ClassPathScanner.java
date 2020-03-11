@@ -10,10 +10,11 @@ import java.util.List;
 
 import static com.runx.framework.contants.Constants.ROOT_PATH;
 
-/**
+/** 该类已经过时了，请参考 ClassPathResourceScanner
  * @author: kisszpy
  * @date: 2020/3/9
  */
+@Deprecated
 public class ClassPathScanner {
 
     private List<String> resources = new ArrayList<>();

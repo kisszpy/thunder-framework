@@ -7,10 +7,11 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
+/** 该类已经过时了，参考 BeanDefinition
  * @author: kisszpy
  * @date: 2020/3/9
  */
+@Deprecated
 @Data
 public class BeanDefine {
 

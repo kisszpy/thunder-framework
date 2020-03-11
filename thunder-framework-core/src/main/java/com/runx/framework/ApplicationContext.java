@@ -19,9 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 /**
+ * 该类已经过时了@AnnotationApplicationContext
  * @author: kisszpy
  * @date: 2020/3/9
  */
+@Deprecated
 @Slf4j
 public class ApplicationContext  {
 
