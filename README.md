@@ -4,6 +4,7 @@
 * AOP支持JDK动态代理和Cglib两种
 * com.runx.example 主要模拟使用场景
 * com.runx.framework 主要是框架功能
+* 实现资源文件加载和处理，支持application.properties、application.yml、application.yaml
 ``` text
 目前来说实现比较粗糙，但是功能基本已经有了，后续要进行细腻处理
 ```
