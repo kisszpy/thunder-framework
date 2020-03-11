@@ -6,6 +6,9 @@
 * com.runx.framework 主要是框架功能
 * 实现资源文件加载和处理，支持application.properties、application.yml、application.yaml
 * 完成框架内部对于IOC容器的使用
+* 完善aop和嵌入式Tomcat的开发 [进行中]
+* 完成事务管理 [规划中]
+* 使用框架功能开发一个简单的blog系统 [规划中]
 ``` text
 目前来说实现比较粗糙，但是功能基本已经有了，后续要进行细腻处理
 ```
