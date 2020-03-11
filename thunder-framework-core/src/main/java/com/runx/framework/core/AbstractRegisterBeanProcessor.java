@@ -13,7 +13,7 @@ public class AbstractRegisterBeanProcessor implements RegisterBean {
     /**
      * 存放类的定义，以及类的初始化
      */
-    protected Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(64);
+    protected static final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
     @Override
     public void register(BeanDefinition beanDefinition) {

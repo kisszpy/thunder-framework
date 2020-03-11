@@ -28,10 +28,14 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         loadResource(basePackage).stream().forEach(className -> {
             // bean定义
             BeanDefinition beanDefinition = annotationRegisterBeanProcessor.define(className,classLoader);
-            // bean的初始化
-            annotationRegisterBeanProcessor.init(beanDefinition);
-            // 完成Bean的注册
-            annotationRegisterBeanProcessor.register(beanDefinition);
+            if (beanDefinition != null) {
+                // 处理依赖
+                annotationRegisterBeanProcessor.handleDependency(beanDefinition);
+                // bean的初始化
+                annotationRegisterBeanProcessor.init(beanDefinition);
+                // 完成Bean的注册
+                annotationRegisterBeanProcessor.register(beanDefinition);
+            }
         });
         // 补偿
         annotationRegisterBeanProcessor.compensate();

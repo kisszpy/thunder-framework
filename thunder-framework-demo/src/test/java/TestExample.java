@@ -80,6 +80,7 @@ public class TestExample {
     public void testNewVersion() {
         AnnotationApplicationContext context = new AnnotationApplicationContext("com.runx.example");
         HelloExample example = context.getBean(HelloExample.class);
+        example.exec();
     }
 
 

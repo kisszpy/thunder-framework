@@ -41,6 +41,7 @@ public abstract class AbstractApplicationContext extends AbstractRegisterBeanPro
     }
 
     public  <T> T getBean(Class<?> clazz) {
+        System.out.println(beanDefinitionMap);
         T t = (T) beanDefinitionMap.values().stream()
                 .filter(item->item.getClazz().equals(clazz) || Arrays.asList(item.getInterfaces()).contains(clazz) )
                 .findFirst().get().getInstance();

@@ -11,6 +11,7 @@ public interface RegisterBean {
 
     /**
      * 完成对Bean的定义
+     * @param beanDefinition
      */
     void register(BeanDefinition beanDefinition);
 
