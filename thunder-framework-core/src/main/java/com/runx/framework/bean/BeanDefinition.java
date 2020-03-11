@@ -1,5 +1,6 @@
 package com.runx.framework.bean;
 
+import com.runx.framework.aop.JoinPoint;
 import lombok.Data;
 
 import java.lang.reflect.Constructor;
@@ -79,6 +80,8 @@ public class BeanDefinition {
      * 销毁函数
      */
     private Method destroyMethod;
+
+
 
 
 }
