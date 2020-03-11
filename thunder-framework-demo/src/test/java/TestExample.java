@@ -2,6 +2,7 @@ import com.runx.example.HelloExample;
 import com.runx.example.service.ArticleServiceImpl;
 import com.runx.example.service.UserService;
 import com.runx.example.service.impl.UserServiceImpl;
+import com.runx.framework.AnnotationApplicationContext;
 import com.runx.framework.ApplicationContext;
 import com.runx.framework.annotation.Autowired;
 import com.runx.framework.bean.JdkProxyBeanFactory;
@@ -73,6 +74,12 @@ public class TestExample {
         int  result = example.showMyLikes();
         System.out.println(result);
         context.close();
+    }
+
+    @Test
+    public void testNewVersion() {
+        AnnotationApplicationContext context = new AnnotationApplicationContext("com.runx.example");
+        HelloExample example = context.getBean(HelloExample.class);
     }
 
 

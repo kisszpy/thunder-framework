@@ -1,20 +1,25 @@
 package com.runx.framework.core;
 
 import com.runx.framework.annotation.*;
+import com.runx.framework.bean.BeanDefine;
 import com.runx.framework.bean.BeanDefinition;
 import com.runx.framework.utils.ReflectUtils;
 import com.runx.framework.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
  * @author: kisszpy
  * @date: 2020/3/10
  */
+@Slf4j
 public class AnnotationRegisterBeanProcessor extends AbstractRegisterBeanProcessor implements LifeCircle {
 
     /**
@@ -108,5 +113,54 @@ public class AnnotationRegisterBeanProcessor extends AbstractRegisterBeanProcess
     @Override
     public void destroyMethod() {
         // fixme
+    }
+
+    private <T> T findOriginInstance(Class<?> clazz) {
+        return (T) beanDefinitionMap.values().stream()
+                .filter(item->item.getClazz().equals(clazz)
+                        || Arrays.asList(item.getInterfaces()).contains(clazz) )
+                .findFirst().get().getInstance();
+    }
+
+    public void compensate() {
+        // 完成Bean的补偿
+        for (String k : beanDefinitionMap.keySet()) {
+            BeanDefinition item = beanDefinitionMap.get(k);
+            Map<String,Class<?>> dependencies = item.getDependencies();
+            for(String key : dependencies.keySet()) {
+                try {
+                    Object instance = item.getInstance();
+                    Field field = instance.getClass().getDeclaredField(key);
+                    field.setAccessible(true);
+                    Object target = findOriginInstance(dependencies.get(key));
+                    field.set(instance,target);
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (!item.isInitial()){
+                // fixme
+                Class<?>[] clazz = item.getConstructor().getParameterTypes();
+                Object[] paramValue = new Object[clazz.length];
+                // fill values for parameter
+                for (int i = 0; i < clazz.length; i++) {
+                    paramValue[i] = findOriginInstance(clazz[i]);
+                }
+                try {
+                    Object instance = item.getConstructor().newInstance(paramValue);
+                    item.setInstance(instance);
+                    item.setInitial(true);
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        log.info("application context initial success .");
     }
 }
