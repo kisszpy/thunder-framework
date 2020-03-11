@@ -12,4 +12,11 @@ public class Constants {
 
     public static final String JAR = "jar";
 
+    public static final String DEFAULT_RESOURCE_FILE_PREFIX = "application";
+
+    public static final String PROPERTIES_EXT = ".properties";
+
+    public static final String[] YAML_EXT = {".yml",".yaml"};
+
+
 }

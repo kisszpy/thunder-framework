@@ -12,11 +12,4 @@ public class ObjectUtils {
         }
         return false;
     }
-
-    public static void main(String[] args) {
-        Object[] el = new Object[] {};
-        System.out.println(isEmpty(el));
-
-    }
-
 }
