@@ -1,9 +1,12 @@
 package com.runx.framework.utils;
 
 import com.runx.framework.annotation.Autowired;
+import com.runx.framework.annotation.Before;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -15,6 +18,7 @@ public class ReflectUtils {
 
     /**
      * 获取构造函数集合
+     *
      * @param clazz
      * @return
      */
@@ -24,6 +28,23 @@ public class ReflectUtils {
 
     public static Stream<Constructor> getConstructorsOfStream(Class<?> clazz) {
         return Arrays.stream(clazz.getConstructors());
+    }
+
+    public static Method getAnnotationBeforeMethod(Class<?> clazz) {
+        return Arrays.stream(clazz.getDeclaredMethods())
+                .filter(x->x.isAnnotationPresent(Before.class))
+                .findFirst()
+                .orElseGet(null);
+    }
+
+
+    public static Method getMethod(String name, Class<?> clazz) {
+        try {
+            return clazz.getDeclaredMethod(name);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static Object instance(Constructor<?> constructor) {

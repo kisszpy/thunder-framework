@@ -22,4 +22,8 @@ public class JoinPoint {
 
     private MethodProxy methodProxy;
 
+    public Object proceed() throws Throwable {
+        return methodProxy.invokeSuper(o,objects);
+    }
+
 }

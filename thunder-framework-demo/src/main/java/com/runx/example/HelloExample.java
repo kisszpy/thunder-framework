@@ -7,30 +7,31 @@ import com.runx.example.user.service.LoginService;
 import com.runx.framework.ApplicationContext;
 import com.runx.framework.annotation.Autowired;
 import com.runx.framework.annotation.Component;
+import com.runx.framework.annotation.Service;
 
 /**
  * @author: kisszpy
  * @date: 2020/3/9
  */
 
-@Component
+@Service
 public class HelloExample {
 
-    private String name = "Java";
+//    private String name = "Java";
 
     @Autowired
-    private UserService userService;
+    public UserService userService;
 
     @Autowired
-    private UserDao userDao;
+    public UserDao userDao;
 
     @Autowired
-    private LoginService loginService;
+    public LoginService loginService;
 
     public void exec() {
-        userService.say();
-        boolean result = loginService.login("hello","23");
-        System.out.println("登录结果：" + result);
+         userService.say();
+        // boolean result = loginService.login("hello","23");
+        System.out.println("登录结果：" + false);
     }
 
 

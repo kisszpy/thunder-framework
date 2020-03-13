@@ -22,6 +22,7 @@
             <artifactId>thunder-framework-case</artifactId>
             <version>${project.version}</version>
         </dependency>
+
     </dependencies>
 
 </project>

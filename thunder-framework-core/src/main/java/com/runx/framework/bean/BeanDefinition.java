@@ -1,10 +1,13 @@
 package com.runx.framework.bean;
 
+import com.runx.framework.aop.AspectMetaData;
 import com.runx.framework.aop.JoinPoint;
 import lombok.Data;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -69,7 +72,7 @@ public class BeanDefinition {
     /**
      * 按照类型来获取，后续再扩展
      */
-    private Map<String,Class<?>> dependencies = new ConcurrentHashMap<>(16);
+    private Map<String, Class<?>> dependencies = new ConcurrentHashMap<>(16);
 
     /**
      * 构造后初始化函数
@@ -81,7 +84,29 @@ public class BeanDefinition {
      */
     private Method destroyMethod;
 
+    /**
+     * 判断是否是切面
+     */
+    private boolean isAspect;
+
+    /**
+     * 切面信息
+     */
+    private AspectMetaData aspectMetaData;
 
 
-
+    public void copyFields()  {
+        Field[] fields = instance.getClass().getDeclaredFields();
+        Field[] proxyFields = proxyInstance.getClass().getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            try {
+                fields[i].setAccessible(true);
+                proxyFields[i].setAccessible(true);
+                proxyFields[i].set(proxyInstance,fields[i].get(instance));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                continue;
+            }
+        }
+    }
 }

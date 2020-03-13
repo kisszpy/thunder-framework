@@ -1,16 +1,21 @@
 import com.runx.example.HelloExample;
 import com.runx.example.service.ArticleServiceImpl;
+import com.runx.example.service.OkService;
 import com.runx.example.service.UserService;
 import com.runx.example.service.impl.UserServiceImpl;
 import com.runx.framework.AnnotationApplicationContext;
 import com.runx.framework.ApplicationContext;
 import com.runx.framework.annotation.Autowired;
+import com.runx.framework.aop.CglibProxy;
 import com.runx.framework.bean.JdkProxyBeanFactory;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import net.sf.cglib.core.DebuggingClassWriter;
+import net.sf.cglib.proxy.InvocationHandler;
+import net.sf.cglib.proxy.Proxy;
 import org.junit.Test;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.Arrays;
 
 /**
@@ -78,11 +83,10 @@ public class TestExample {
 
     @Test
     public void testNewVersion() {
+        System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY,"/tmp");
         AnnotationApplicationContext context = new AnnotationApplicationContext("com.runx.example");
         HelloExample example = context.getBean(HelloExample.class);
+        System.out.println(example.getClass().getDeclaredFields().length);
         example.exec();
     }
-
-
-
 }

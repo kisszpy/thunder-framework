@@ -1,14 +1,18 @@
 package com.runx.framework.core;
 
 import com.runx.framework.annotation.*;
+import com.runx.framework.aop.AspectMetaData;
 import com.runx.framework.bean.BeanDefinition;
 import com.runx.framework.utils.ReflectUtils;
 import com.runx.framework.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.objenesis.Objenesis;
+import org.objenesis.ObjenesisStd;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +45,8 @@ public abstract class AbstractRegisterBeanProcessor implements RegisterBean, Lif
         beanDefinition.setAlias(new String[]{
                 beanDefinition.getName()
         });
+        Predicate<Class> aspectPredicate = x->x.isAnnotationPresent(Aspect.class);
+        beanDefinition.setAspect(aspectPredicate.test(clazz));
         beanDefinition.setClazzName(clazz.getName());
         beanDefinition.setSimpleName(clazz.getSimpleName());
         // only exists a @Autowired constructor
@@ -57,6 +63,14 @@ public abstract class AbstractRegisterBeanProcessor implements RegisterBean, Lif
                     .get();
         }
         beanDefinition.setConstructor(constructor);
+        // 设置切面信息
+        if (beanDefinition.isAspect()) {
+            AspectMetaData aspectMetaData = new AspectMetaData();
+            Method method = ReflectUtils.getMethod("pointcut",clazz);
+            aspectMetaData.setPointcut(method.getDeclaredAnnotation(Pointcut.class));
+            aspectMetaData.setBefore(ReflectUtils.getAnnotationBeforeMethod(clazz));
+            beanDefinition.setAspectMetaData(aspectMetaData);
+        }
         return beanDefinition;
     }
 
@@ -93,10 +107,13 @@ public abstract class AbstractRegisterBeanProcessor implements RegisterBean, Lif
             Predicate<Class> componentPredicate = x -> x.isAnnotationPresent(Component.class);
             Predicate<Class> repositoryPredicate = x -> x.isAnnotationPresent(Repository.class);
             Predicate<Class> configurationPredicate = x -> x.isAnnotationPresent(Configuration.class);
+            Predicate<Class> aspectPredicate = x -> x.isAnnotationPresent(Aspect.class);
+
             boolean conditionalResult = servicePredicate
                     .or(componentPredicate)
                     .or(repositoryPredicate)
                     .or(configurationPredicate)
+                    .or(aspectPredicate)
                     .test(clazz);
             if (conditionalResult) {
                 // 定义bean
@@ -122,18 +139,23 @@ public abstract class AbstractRegisterBeanProcessor implements RegisterBean, Lif
 
     @Override
     public void init(BeanDefinition beanDefinition) {
-        Object object = null;
-        Constructor<?> constructor = beanDefinition.getConstructor();
-        if (constructor.getParameterCount() == 0) {
-            object = ReflectUtils.instance(constructor);
-            beanDefinition.setInstance(object);
-            beanDefinition.setInitial(true);
 
-        } else {
-            // 暂时无法构造
-            beanDefinition.setInitial(false);
-            beanDefinition.setInstance(null);
-        }
+        Objenesis objenesis = new ObjenesisStd(true);
+        Object instance = objenesis.newInstance(beanDefinition.getClazz());
+        beanDefinition.setInstance(instance);
+        beanDefinition.setInitial(true);
+//        Object object = null;
+//        Constructor<?> constructor = beanDefinition.getConstructor();
+//        if (constructor.getParameterCount() == 0) {
+//            object = ReflectUtils.instance(constructor);
+//            beanDefinition.setInstance(object);
+//            beanDefinition.setInitial(true);
+//
+//        } else {
+//            // 暂时无法构造
+//            beanDefinition.setInitial(false);
+//            beanDefinition.setInstance(null);
+//        }
     }
 
     @Override
