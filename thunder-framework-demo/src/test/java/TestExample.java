@@ -83,7 +83,7 @@ public class TestExample {
 
     @Test
     public void testNewVersion() {
-        System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY,"/tmp");
+        // System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY,"/tmp");
         AnnotationApplicationContext context = new AnnotationApplicationContext("com.runx.example");
         HelloExample example = context.getBean(HelloExample.class);
         System.out.println(example.getClass().getDeclaredFields().length);

@@ -21,6 +21,11 @@ public class RegularExpression {
         return null;
     }
 
+    public static void main(String[] args) {
+        // 括号被转义
+        System.out.println("execute(public void com.kisszpy)".matches("(execute\\((\\w+\\s \\w+ *.*\\)))"));
+    }
+
     public static void noCaptureGroup(){
 
         // (?:(\d+))?\s?([a-zA-Z]+)?.+

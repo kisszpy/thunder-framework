@@ -18,6 +18,6 @@ public class Constants {
 
     public static final String[] YAML_EXT = {".yml",".yaml"};
 
-    public static final String REGULAR_EXECUTE = "(execute\\()(\\w.*.*)(\\))";
+    public static final String REGULAR_EXECUTE = "(execute\\()(public \\* \\w.*.*)(..\\))";
 
 }

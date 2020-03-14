@@ -14,7 +14,7 @@ import com.runx.framework.aop.JoinPoint;
 public class LogHandler {
 
 
-    @Pointcut("execute(com.runx.example.*(..))")
+    @Pointcut("execute(public * com.runx.example.*(..))")
     public void pointcut(){}
 
     @Before("pointcut")

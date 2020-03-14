@@ -29,8 +29,7 @@ public class HelloExample {
     public LoginService loginService;
 
     public void exec() {
-         userService.say();
-        // boolean result = loginService.login("hello","23");
+        userService.say();
         System.out.println("登录结果：" + false);
     }
 

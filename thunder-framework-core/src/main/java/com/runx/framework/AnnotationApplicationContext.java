@@ -21,6 +21,11 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
 
     private ResourceResolveContext resourceResolveContext;
 
+    @Override
+    protected Scan getScanner() {
+        return scan;
+    }
+
     public AnnotationApplicationContext(String basePackage) {
         // 初始化资源上下文
         resourceResolveContext = new ResourceResolveContext(classLoader);
@@ -52,8 +57,5 @@ public class AnnotationApplicationContext extends AbstractApplicationContext {
         resourceResolveContext.resolve();
     }
 
-    @Override
-    protected Scan getScanner() {
-        return scan;
-    }
+
 }

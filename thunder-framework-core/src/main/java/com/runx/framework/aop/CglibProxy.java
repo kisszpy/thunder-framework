@@ -1,5 +1,6 @@
 package com.runx.framework.aop;
 
+import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.core.DefaultNamingPolicy;
 import net.sf.cglib.proxy.CallbackFilter;
 import net.sf.cglib.proxy.Enhancer;
@@ -12,6 +13,7 @@ import java.lang.reflect.Method;
  * @author: kisszpy
  * @date: 2020/3/9
  */
+@Slf4j
 public class CglibProxy  {
 
     private Object target;
@@ -35,10 +37,21 @@ public class CglibProxy  {
         return enhancer.create();
     }
     private class DefaultCallbackFilter implements CallbackFilter {
-
         @Override
         public int accept(Method method) {
+            log.info("accept");
+            log.info("method name " + method);
             return 0;
+        }
+    }
+
+    private class AspectProxyInterceptor implements MethodInterceptor {
+
+        @Override
+        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+            log.info("package name is {}",target.getClass().getPackage());
+            log.info("method info is " + method.toString());
+            return null;
         }
     }
 
