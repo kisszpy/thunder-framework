@@ -1,5 +1,6 @@
 package com.runx.framework.expression;
 
+import com.runx.framework.annotation.Pointcut;
 import com.runx.framework.contants.Constants;
 
 import java.util.regex.Matcher;
@@ -12,19 +13,12 @@ import java.util.regex.Pattern;
 public class RegularExpression {
     private static final Pattern pattern = Pattern.compile(Constants.REGULAR_EXECUTE);
 
-    public static String matchExecute(String source){
-        Matcher matcher = pattern.matcher(source);
+    public static boolean matchExecute(Pointcut pointcut,String source){
+        Matcher matcher = pattern.matcher(pointcut.value());
         boolean result = matcher.find();
-        if (result) {
-            return matcher.group(2);
-        }
-        return null;
+        return  result;
     }
 
-    public static void main(String[] args) {
-        // 括号被转义
-        System.out.println("execute(public void com.kisszpy)".matches("(execute\\((\\w+\\s \\w+ *.*\\)))"));
-    }
 
     public static void noCaptureGroup(){
 

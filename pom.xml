@@ -12,6 +12,7 @@
         <module>thunder-framework-demo</module>
         <module>thunder-framework-core</module>
         <module>thunder-framework-case</module>
+        <module>thunder-framework-example</module>
     </modules>
 
     <properties>

@@ -22,8 +22,10 @@ public class JoinPoint {
 
     private MethodProxy methodProxy;
 
+    private Object targetSource;
+
     public Object proceed() throws Throwable {
-        return methodProxy.invoke(o,objects);
+        return methodProxy.invoke(targetSource,objects);
     }
 
 }

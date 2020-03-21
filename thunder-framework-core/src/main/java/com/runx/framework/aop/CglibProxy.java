@@ -1,5 +1,6 @@
 package com.runx.framework.aop;
 
+import com.runx.framework.handler.AspectHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.core.DefaultNamingPolicy;
 import net.sf.cglib.proxy.CallbackFilter;
@@ -24,12 +25,14 @@ public class CglibProxy  {
 
     private static final int AOP_INTERCEPTOR_INDEX = 0;
 
+    private static final int ASPECT_INTERCEPTOR_INDEX = 1;
 
     public Object getInstance() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(target.getClass());
         MethodInterceptor[] callbacks = {
-                new DynamicAopProxyInterceptor()
+                new DynamicAopProxyInterceptor(),
+                new AspectProxyInterceptor()
         };
         enhancer.setCallbacks(callbacks);
         enhancer.setNamingPolicy(new DefaultNamingPolicy());
@@ -41,7 +44,13 @@ public class CglibProxy  {
         public int accept(Method method) {
             log.info("accept");
             log.info("method name " + method);
-            return 0;
+            boolean matchResult = new AspectHandler().methodMatchers(target.getClass(),method);
+            if (matchResult) {
+                log.info("entry aspect handler .... ");
+                return AOP_INTERCEPTOR_INDEX;
+            }else {
+                return ASPECT_INTERCEPTOR_INDEX;
+            }
         }
     }
 
@@ -49,9 +58,12 @@ public class CglibProxy  {
 
         @Override
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            log.info("package name is {}",target.getClass().getPackage());
-            log.info("method info is " + method.toString());
-            return null;
+            JoinPoint joinPoint = new JoinPoint();
+            joinPoint.setMethod(method);
+            joinPoint.setMethodProxy(proxy);
+            joinPoint.setObjects(args);
+            joinPoint.setTargetSource(target);
+            return joinPoint.proceed();
         }
     }
 
